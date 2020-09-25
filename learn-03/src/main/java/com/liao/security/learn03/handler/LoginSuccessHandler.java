@@ -1,7 +1,7 @@
-package com.liao.securtity.learn03.handler;
+package com.liao.security.learn02.handler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.liao.securtity.learn03.config.R;
+import com.liao.security.learn02.config.R;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;

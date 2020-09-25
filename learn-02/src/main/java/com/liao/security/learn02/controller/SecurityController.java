@@ -1,4 +1,4 @@
-package com.liao.securtity.learn03.controller;
+package com.liao.security.learn02.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

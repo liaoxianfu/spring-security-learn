@@ -1,10 +1,15 @@
-package com.liao.securtity.learn03.config;
+package com.liao.security.learn02.config;
 
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import com.liao.security.learn02.handler.LoginSuccessHandler;
+import com.liao.security.learn02.handler.LoginFailHandler;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 import javax.annotation.Resource;
 
@@ -19,17 +24,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Resource
     private PasswordEncoder passwordEncoder;
 
+    @Resource
+    private LoginSuccessHandler successHandler;
+
+    @Resource
+    private LoginFailHandler failHandler;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.
                 // 取消csrf的限制 否者无法加载页面
                         csrf().disable()
-                .formLogin().loginPage("/login.html")
+                .formLogin()
+                .loginPage("/login.html")
                 // 进行登录处理的URL 也就是form表单的action登录url 需要在antMatchers中允许访问 不进行拦截
                 .loginProcessingUrl("/login")
-                // 默认处理成功之后跳转的页面
-                .defaultSuccessUrl("/index")
+                .successHandler(successHandler)
+                .failureHandler(failHandler)
                 .and()
                 // 验证规则
                 .authorizeRequests()
@@ -45,17 +57,38 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     }
 
+//    @Override
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//                // 定义用户名
+//                .withUser("admin")
+//                // 使用自定义的passwordEncoder加密密码
+//                .password(passwordEncoder.encode("123456"))
+//                .roles("admin")
+//                .and()
+//                .withUser("demo")
+//                .password(passwordEncoder.encode("1234"))
+//                .roles("demo");
+//    }
+
+    /**
+     * 角色区分大小写
+     * @return UserDetailsService
+     */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                // 定义用户名
-                .withUser("admin")
-                // 使用自定义的passwordEncoder加密密码
+    @Bean
+    public UserDetailsService userDetailsService() {
+        InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
+        manager.createUser(User.withUsername("admin")
                 .password(passwordEncoder.encode("123456"))
-                .roles("admin")
-                .and()
-                .withUser("demo")
+                .roles("admin").build()
+        );
+        manager.createUser(User.withUsername("demo")
                 .password(passwordEncoder.encode("1234"))
-                .roles("demo");
+                .roles("demo").build()
+        );
+        return manager;
     }
+    
+
 }

@@ -1,4 +1,4 @@
-package com.liao.securtity.learn03.config;
+package com.liao.security.learn02.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
